@@ -15,6 +15,27 @@ Full-stack portfolio tracker: NestJS API + Angular SPA, bundled into a **single 
 
 ---
 
+## Clone This Repo
+
+```bash
+git clone https://github.com/hariprakash-rrm/manulife-task.git
+cd manulife-task
+```
+
+## Next Steps
+
+1. Start the full app with Docker:
+
+```bash
+docker compose up --build
+```
+
+2. Open the app at `http://localhost`.
+3. If you need custom JWT values, set `JWT_SECRET` and `JWT_REFRESH_SECRET` before starting, or place them in a `.env` file in the project root.
+4. For local development without Docker, start MongoDB + Redis with `docker compose -f docker-compose.dev.yml up -d`, then run the backend and frontend separately.
+
+---
+
 ## Run with a single command
 
 ```bash
