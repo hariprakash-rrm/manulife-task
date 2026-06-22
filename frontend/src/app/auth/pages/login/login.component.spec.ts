@@ -38,6 +38,7 @@ describe('LoginComponent Integration', () => {
     expect(compiled.querySelector('form')).toBeTruthy();
     expect(compiled.querySelector('input[type="email"]')).toBeTruthy();
     expect(compiled.querySelector('input[type="password"]')).toBeTruthy();
+    expect(compiled.textContent).toContain('System Test Runner');
   });
 
   it('should show validation errors on invalid submit', () => {
