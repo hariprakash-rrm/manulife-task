@@ -1,0 +1,75 @@
+<div class="min-h-screen flex items-center justify-center p-6 bg-slate-50/50 animate-fade-in">
+  <div class="w-full max-w-md p-8 rounded-2xl bg-white border border-slate-200/80 shadow-lg flex flex-col gap-6">
+    <div class="text-center flex flex-col items-center gap-1.5">
+      <!-- Brand Logo Icon -->
+      <svg class="w-10 h-10 text-indigo-600 mb-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+      <h1 class="text-3xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent tracking-tight">NovaInvest</h1>
+      <p class="text-sm text-slate-400 font-medium">Create a secure account to track your assets</p>
+    </div>
+
+    @if (serverError()) {
+      <div class="p-3.5 rounded-xl bg-rose-50 text-rose-700 border border-rose-100 text-xs font-bold">{{ serverError() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-4">
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Email Address</label>
+        <input 
+          type="email" 
+          formControlName="email" 
+          placeholder="name@domain.com"
+          [class]="fieldErrors()['email']
+            ? 'w-full px-4 py-2.5 rounded-xl border border-rose-300 focus:border-rose-500 focus:ring-3 focus:ring-rose-500/10 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-200 bg-white'
+            : 'w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 focus:ring-3 focus:ring-indigo-600/10 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-200 bg-white'"
+        >
+        @if (fieldErrors()['email']) {
+          <div class="text-[11px] font-semibold text-rose-600 mt-0.5">{{ fieldErrors()['email'] }}</div>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Password</label>
+        <input 
+          type="password" 
+          formControlName="password" 
+          placeholder="Min. 8 characters"
+          [class]="fieldErrors()['password']
+            ? 'w-full px-4 py-2.5 rounded-xl border border-rose-300 focus:border-rose-500 focus:ring-3 focus:ring-rose-500/10 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-200 bg-white'
+            : 'w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 focus:ring-3 focus:ring-indigo-600/10 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-200 bg-white'"
+        >
+        @if (fieldErrors()['password']) {
+          <div class="text-[11px] font-semibold text-rose-600 mt-0.5">{{ fieldErrors()['password'] }}</div>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Confirm Password</label>
+        <input 
+          type="password" 
+          formControlName="confirmPassword" 
+          placeholder="••••••••"
+          [class]="fieldErrors()['confirmPassword']
+            ? 'w-full px-4 py-2.5 rounded-xl border border-rose-300 focus:border-rose-500 focus:ring-3 focus:ring-rose-500/10 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-200 bg-white'
+            : 'w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 focus:ring-3 focus:ring-indigo-600/10 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-200 bg-white'"
+        >
+        @if (fieldErrors()['confirmPassword']) {
+          <div class="text-[11px] font-semibold text-rose-600 mt-0.5">{{ fieldErrors()['confirmPassword'] }}</div>
+        }
+      </div>
+
+      <button 
+        type="submit" 
+        class="w-full py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white rounded-xl font-bold text-sm cursor-pointer shadow-md shadow-indigo-600/10 transition-all duration-200 hover:translate-y-[-1px] active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed mt-2" 
+        [disabled]="loading()"
+      >
+        {{ loading() ? 'Registering...' : 'Register' }}
+      </button>
+    </form>
+
+    <div class="text-center text-xs text-slate-400 font-semibold mt-2">
+      Already have an account? <a routerLink="/login" class="text-indigo-600 hover:underline">Sign in here</a>
+    </div>
+  </div>
+</div>

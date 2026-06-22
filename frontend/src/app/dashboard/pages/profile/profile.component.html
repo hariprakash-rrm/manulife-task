@@ -1,0 +1,39 @@
+<div class="flex justify-between items-end mb-8 animate-fade-in">
+  <div>
+    <h2 class="text-2xl font-extrabold tracking-tight text-slate-800">User Profile</h2>
+    <p class="text-sm text-slate-500 mt-1">Manage your account and settings</p>
+  </div>
+</div>
+
+<div class="max-w-2xl mx-auto p-8 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex flex-col gap-8 animate-fade-in">
+  @if (isLoading()) {
+    <div class="h-[200px] rounded-xl bg-slate-200/70 border border-slate-200/30 animate-pulse"></div>
+  } @else if (user()) {
+    <div class="flex items-center gap-6">
+      <div class="text-4xl w-20 h-20 rounded-full flex items-center justify-center bg-gradient-to-tr from-indigo-500/10 to-purple-500/10 border-2 border-indigo-500/20 text-indigo-600 shadow-inner">👤</div>
+      <div class="flex flex-col">
+        <h3 class="text-xl font-extrabold text-slate-800 mb-1.5">{{ user()?.email }}</h3>
+        <span class="px-3 py-1 rounded-full text-[11px] font-extrabold bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-600 border border-indigo-100/80 shadow-sm w-fit">NovaInvest Premium</span>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-1 p-6 rounded-xl bg-slate-50/50 border border-slate-100">
+      <div class="flex justify-between items-center py-3.5 border-b border-slate-100">
+        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">User ID</span>
+        <span class="font-mono text-xs bg-slate-100 px-2.5 py-1 rounded border border-slate-200 text-slate-600">{{ user()?.id }}</span>
+      </div>
+      <div class="flex justify-between items-center py-3.5 border-b border-slate-100">
+        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Email Address</span>
+        <span class="text-sm font-bold text-slate-700">{{ user()?.email }}</span>
+      </div>
+      <div class="flex justify-between items-center py-3.5 border-b border-slate-100">
+        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Account Status</span>
+        <span class="text-sm font-bold text-emerald-600">Active &amp; Secure</span>
+      </div>
+      <div class="flex justify-between items-center py-3.5 last:border-b-0 last:pb-0">
+        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Security Policy</span>
+        <span class="text-sm font-bold text-slate-700">Automatic Token Auto-Refresh</span>
+      </div>
+    </div>
+  }
+</div>

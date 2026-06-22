@@ -1,0 +1,317 @@
+<div class="animate-fade-in">
+
+  <!-- Header -->
+  <div class="flex items-end justify-between mb-7">
+    <div>
+      <div class="flex items-center gap-2 mb-1.5">
+        <span class="relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-violet-500"></span>
+        </span>
+        <span class="text-[10px] font-black text-violet-500 uppercase tracking-[0.2em]">Architecture</span>
+      </div>
+      <h2 class="text-2xl font-extrabold text-slate-800 tracking-tight">Project Flow Diagram</h2>
+      <p class="text-sm text-slate-500 mt-0.5">End-to-end request flow · Angular → NestJS → MongoDB / Redis</p>
+    </div>
+    @if (activeFlow() || activeNode()) {
+      <button
+        class="px-4 py-2.5 text-sm font-semibold text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition-all duration-200"
+        (click)="activeFlow.set(null); activeNode.set(null)"
+      >✕ Clear selection</button>
+    }
+  </div>
+
+  <!-- Flow selector buttons -->
+  <div class="flex gap-3 mb-5 flex-wrap items-center">
+    <span class="text-xs font-black text-slate-400 uppercase tracking-wider">Highlight flow:</span>
+    @for (flow of flows; track flow.id) {
+      <button
+        class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border transition-all duration-200 cursor-pointer"
+        [ngClass]="activeFlow() === flow.id
+          ? (flow.color === 'indigo'  ? 'bg-indigo-600  text-white border-transparent shadow-lg shadow-indigo-500/30'
+           : flow.color === 'emerald' ? 'bg-emerald-600 text-white border-transparent shadow-lg shadow-emerald-500/30'
+           :                           'bg-violet-600  text-white border-transparent shadow-lg shadow-violet-500/30')
+          : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'"
+        (click)="selectFlow(flow.id)"
+      >
+        <span class="w-2 h-2 rounded-full"
+          [ngClass]="activeFlow() === flow.id
+            ? 'bg-white/60'
+            : (flow.color === 'indigo'  ? 'bg-indigo-500'
+             : flow.color === 'emerald' ? 'bg-emerald-500'
+             :                           'bg-violet-500')"></span>
+        {{ flow.label }}
+      </button>
+    }
+  </div>
+
+  <!-- Active flow description -->
+  @for (flow of flows; track flow.id) {
+    @if (flow.id === activeFlow()) {
+      <div class="mb-5 p-4 rounded-xl bg-slate-50 border-l-4 animate-fade-in"
+        [ngClass]="flow.color === 'indigo'  ? 'border-l-indigo-500'
+                 : flow.color === 'emerald' ? 'border-l-emerald-500'
+                 :                            'border-l-violet-500'">
+        <p class="text-xs font-bold text-slate-700 mb-1">{{ flow.label }}</p>
+        <p class="text-xs text-slate-500 leading-relaxed">{{ flow.description }}</p>
+      </div>
+    }
+  }
+
+  <!-- Main diagram card -->
+  <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden mb-6">
+
+    <!-- Layer legend -->
+    <div class="flex border-b border-slate-100 bg-slate-50/60">
+      @for (layer of layers; track layer.id) {
+        <div class="flex-1 px-3 py-3 border-r border-slate-100/80 last:border-r-0">
+          <p class="text-[10px] font-black uppercase tracking-wider"
+            [ngClass]="layer.color === 'violet'  ? 'text-violet-600'
+                     : layer.color === 'indigo'  ? 'text-indigo-600'
+                     : layer.color === 'sky'     ? 'text-sky-600'
+                     : layer.color === 'emerald' ? 'text-emerald-600'
+                     :                             'text-amber-600'">{{ layer.label }}</p>
+          <p class="text-[9px] text-slate-400 mt-0.5 leading-snug">{{ layer.description }}</p>
+        </div>
+      }
+    </div>
+
+    <!-- Scrollable diagram -->
+    <div class="p-6 overflow-x-auto">
+      <div class="diagram-canvas">
+
+        <!-- Col 0: Browser -->
+        <div class="diagram-col">
+          @for (node of nodes; track node.id) {
+            @if (node.col === 0) {
+              <div [class]="getNodeClass(node)" (click)="selectNode(node)">
+                <div class="node-icon node-icon-client">
+                  <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                  </svg>
+                </div>
+                <p class="node-label">{{ node.label }}</p>
+                @if (node.sublabel) { <p class="node-sub">{{ node.sublabel }}</p> }
+              </div>
+            }
+          }
+        </div>
+
+        <div class="arrow-col"><div class="arrow-line"><div class="arrow-head">›</div></div></div>
+
+        <!-- Col 1: Router + Guards -->
+        <div class="diagram-col">
+          @for (node of nodes; track node.id) {
+            @if (node.col === 1) {
+              <div [class]="getNodeClass(node)" (click)="selectNode(node)">
+                <div class="node-icon node-icon-guard">
+                  <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                  </svg>
+                </div>
+                <p class="node-label">{{ node.label }}</p>
+                @if (node.sublabel) { <p class="node-sub">{{ node.sublabel }}</p> }
+              </div>
+            }
+          }
+        </div>
+
+        <div class="arrow-col"><div class="arrow-line"><div class="arrow-head">›</div></div></div>
+
+        <!-- Col 2: Angular Pages -->
+        <div class="diagram-col">
+          @for (node of nodes; track node.id) {
+            @if (node.col === 2) {
+              <div [class]="getNodeClass(node)" (click)="selectNode(node)">
+                <div class="node-icon node-icon-client">
+                  <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
+                  </svg>
+                </div>
+                <p class="node-label">{{ node.label }}</p>
+                @if (node.sublabel) { <p class="node-sub">{{ node.sublabel }}</p> }
+              </div>
+            }
+          }
+        </div>
+
+        <div class="arrow-col"><div class="arrow-line"><div class="arrow-head">›</div></div></div>
+
+        <!-- Col 3: FE Services + Interceptor -->
+        <div class="diagram-col">
+          @for (node of nodes; track node.id) {
+            @if (node.col === 3) {
+              <div [class]="getNodeClass(node)" (click)="selectNode(node)">
+                <div [class]="node.kind === 'guard' ? 'node-icon node-icon-guard' : 'node-icon node-icon-service'">
+                  @if (node.kind === 'guard') {
+                    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
+                    </svg>
+                  } @else {
+                    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                  }
+                </div>
+                <p class="node-label">{{ node.label }}</p>
+                @if (node.sublabel) { <p class="node-sub">{{ node.sublabel }}</p> }
+              </div>
+            }
+          }
+        </div>
+
+        <!-- HTTP boundary arrow -->
+        <div class="arrow-col http-boundary">
+          <div class="http-label">HTTP / REST</div>
+          <div class="arrow-line dashed-line"><div class="arrow-head arrow-head-dashed">›</div></div>
+        </div>
+
+        <!-- Col 4: NestJS Controllers -->
+        <div class="diagram-col">
+          @for (node of nodes; track node.id) {
+            @if (node.col === 4) {
+              <div [class]="getNodeClass(node)" (click)="selectNode(node)">
+                <div class="node-icon node-icon-api">
+                  <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                </div>
+                <p class="node-label">{{ node.label }}</p>
+                @if (node.sublabel) { <p class="node-sub">{{ node.sublabel }}</p> }
+              </div>
+            }
+          }
+        </div>
+
+        <div class="arrow-col"><div class="arrow-line"><div class="arrow-head">›</div></div></div>
+
+        <!-- Col 5: NestJS Services -->
+        <div class="diagram-col">
+          @for (node of nodes; track node.id) {
+            @if (node.col === 5) {
+              <div [class]="getNodeClass(node)" (click)="selectNode(node)">
+                <div class="node-icon node-icon-service">
+                  <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                </div>
+                <p class="node-label">{{ node.label }}</p>
+                @if (node.sublabel) { <p class="node-sub">{{ node.sublabel }}</p> }
+              </div>
+            }
+          }
+        </div>
+
+        <div class="arrow-col"><div class="arrow-line"><div class="arrow-head">›</div></div></div>
+
+        <!-- Col 6: JWT Guard + Redis Service -->
+        <div class="diagram-col">
+          @for (node of nodes; track node.id) {
+            @if (node.col === 6) {
+              <div [class]="getNodeClass(node)" (click)="selectNode(node)">
+                <div [class]="node.kind === 'cache' ? 'node-icon node-icon-cache' : 'node-icon node-icon-guard'">
+                  @if (node.kind === 'cache') {
+                    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                  } @else {
+                    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                  }
+                </div>
+                <p class="node-label">{{ node.label }}</p>
+                @if (node.sublabel) { <p class="node-sub">{{ node.sublabel }}</p> }
+              </div>
+            }
+          }
+        </div>
+
+        <div class="arrow-col"><div class="arrow-line"><div class="arrow-head">›</div></div></div>
+
+        <!-- Col 7: Data stores -->
+        <div class="diagram-col">
+          @for (node of nodes; track node.id) {
+            @if (node.col === 7) {
+              <div [class]="getNodeClass(node)" (click)="selectNode(node)">
+                <div [class]="node.kind === 'db' ? 'node-icon node-icon-db' : 'node-icon node-icon-cache'">
+                  @if (node.kind === 'db') {
+                    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
+                    </svg>
+                  } @else {
+                    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                  }
+                </div>
+                <p class="node-label">{{ node.label }}</p>
+                @if (node.sublabel) { <p class="node-sub">{{ node.sublabel }}</p> }
+              </div>
+            }
+          }
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Node detail panel -->
+  @if (activeNode()) {
+    <div class="mb-6 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-sm animate-fade-in flex items-start gap-4">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-xl"
+        [ngClass]="activeNode()?.kind === 'client'  ? 'bg-violet-100'
+                 : activeNode()?.kind === 'guard'   ? 'bg-amber-100'
+                 : activeNode()?.kind === 'api'     ? 'bg-sky-100'
+                 : activeNode()?.kind === 'service' ? 'bg-emerald-100'
+                 : activeNode()?.kind === 'db'      ? 'bg-blue-100'
+                 :                                    'bg-rose-100'">
+        {{ activeNode()?.kind === 'client'  ? '🖥' :
+           activeNode()?.kind === 'guard'   ? '🛡' :
+           activeNode()?.kind === 'api'     ? '⚡' :
+           activeNode()?.kind === 'service' ? '⚙️' :
+           activeNode()?.kind === 'db'      ? '🗄' : '⚡' }}
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-3 flex-wrap">
+          <p class="font-extrabold text-slate-800">{{ activeNode()?.label }}</p>
+          <span class="text-[10px] font-black px-2.5 py-1 rounded-full border uppercase tracking-wider"
+            [ngClass]="activeNode()?.kind === 'client'  ? 'bg-violet-50  text-violet-600  border-violet-200'
+                     : activeNode()?.kind === 'guard'   ? 'bg-amber-50   text-amber-600   border-amber-200'
+                     : activeNode()?.kind === 'api'     ? 'bg-sky-50     text-sky-600     border-sky-200'
+                     : activeNode()?.kind === 'service' ? 'bg-emerald-50 text-emerald-600 border-emerald-200'
+                     : activeNode()?.kind === 'db'      ? 'bg-blue-50    text-blue-600    border-blue-200'
+                     :                                    'bg-rose-50    text-rose-600    border-rose-200'"
+          >{{ getKindLabel(activeNode()!.kind) }}</span>
+        </div>
+        <p class="text-xs text-slate-400 font-semibold mt-0.5">{{ activeNode()?.sublabel }}</p>
+        <p class="text-xs text-slate-500 leading-relaxed mt-2">
+          Click a <strong>flow button</strong> above to trace the full request path and see which nodes are involved.
+        </p>
+      </div>
+    </div>
+  }
+
+  <!-- Tech stack footer -->
+  <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+    @for (item of [
+      { label: 'Angular 18',    sub: 'Signals · Standalone', icon: '🔺' },
+      { label: 'NestJS',        sub: 'Modular · Decorators',  icon: '🐱' },
+      { label: 'MongoDB 7',     sub: 'Mongoose ODM',          icon: '🍃' },
+      { label: 'Redis 7',       sub: 'Chart data cache',      icon: '⚡' },
+      { label: 'JWT + Passport',sub: 'Auth strategy',         icon: '🔐' },
+      { label: 'Nginx',         sub: 'Static + proxy',        icon: '🌐' }
+    ]; track item.label) {
+      <div class="p-3 rounded-xl bg-white border border-slate-200/80 shadow-sm flex items-center gap-3">
+        <span class="text-xl">{{ item.icon }}</span>
+        <div>
+          <p class="text-xs font-extrabold text-slate-700">{{ item.label }}</p>
+          <p class="text-[10px] text-slate-400 font-medium">{{ item.sub }}</p>
+        </div>
+      </div>
+    }
+  </div>
+
+</div>

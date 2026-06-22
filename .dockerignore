@@ -1,0 +1,25 @@
+# Dependencies
+**/node_modules
+
+# Build outputs
+**/dist
+frontend/.angular
+
+# Logs
+**/*.log
+
+# Test artifacts
+**/coverage
+
+# Dev environment
+**/.env
+.nvmrc
+docker-compose.dev.yml
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea

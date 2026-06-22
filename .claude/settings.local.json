@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(dir /s /b \"C:\\\\Users\\\\Hari\\\\Desktop\\\\Hari\\\\hari\\\\Tasks\\\\portfolio-dashboard\\\\frontend\\\\src\\\\app\\\\dashboard\")",
+      "Bash(find \"/mnt/c/Users/Hari/Desktop/Hari/hari/Tasks/portfolio-dashboard/frontend/src/app/dashboard\" -type f 2>/dev/null || ls -R \"/c/Users/Hari/Desktop/Hari/hari/Tasks/portfolio-dashboard/frontend/src/app/dashboard/\" 2>/dev/null)",
+      "Bash(node -e \"require.resolve\\('chart.js'\\)\")",
+      "Bash(npm test *)",
+      "mcp__visualize__read_me",
+      "mcp__visualize__show_widget",
+      "mcp__Claude_Preview__preview_start",
+      "mcp__Claude_in_Chrome__navigate",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(npx tsc *)",
+      "Bash(xargs grep -h \"REDIS_HOST\\\\|host\\\\|port\")",
+      "Skill(run)",
+      "Skill(run:*)",
+      "PowerShell(docker compose up -d --build 2>&1)",
+      "PowerShell($global = npm root -g; node -e \"require\\('$global/docx'\\); console.log\\('ok'\\)\" 2>&1)",
+      "PowerShell($env:NODE_PATH = \"C:\\\\Users\\\\Hari\\\\AppData\\\\Roaming\\\\npm\\\\node_modules\"; node --require \"C:\\\\Users\\\\Hari\\\\AppData\\\\Roaming\\\\npm\\\\node_modules\\\\docx\\\\build\\\\index.js\" -e \"console.log\\('docx loaded'\\)\" 2>&1)",
+      "PowerShell($f = \"C:\\\\Users\\\\Hari\\\\Desktop\\\\Hari\\\\hari\\\\Tasks\\\\portfolio-dashboard\\\\NovaInvest_Dashboard_Client_Guide.docx\"; [math]::Round\\(\\(Get-Item $f\\).Length / 1KB, 1\\))"
+    ]
+  }
+}

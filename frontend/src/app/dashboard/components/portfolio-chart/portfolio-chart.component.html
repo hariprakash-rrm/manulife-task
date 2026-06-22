@@ -1,0 +1,27 @@
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+  <div class="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm lg:col-span-1">
+    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-6">Allocation</h3>
+    @if (!assets.length) {
+      <div class="flex items-center justify-center h-[250px] text-sm text-slate-400 text-center p-4">Add assets to see allocation</div>
+    } @else {
+      <div class="relative h-[250px] flex items-center justify-center">
+        <canvas #donutCanvas></canvas>
+        <div class="absolute flex flex-col items-center justify-center pointer-events-none translate-y-[-14px]">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Value</span>
+          <span class="text-lg font-extrabold text-slate-800 tracking-tight mt-0.5">{{ totalValue | currency:'USD' }}</span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm lg:col-span-2">
+    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-6">Portfolio Value Over Time</h3>
+    @if (!chartData || !chartData.labels.length) {
+      <div class="flex items-center justify-center h-[250px] text-sm text-slate-400 text-center p-4">Add and manage assets to build your value history</div>
+    } @else {
+      <div class="relative h-[250px]">
+        <canvas #lineCanvas></canvas>
+      </div>
+    }
+  </div>
+</div>

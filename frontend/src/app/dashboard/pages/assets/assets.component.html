@@ -1,0 +1,451 @@
+<div class="flex justify-between items-end mb-8 animate-fade-in">
+  <div>
+    <h2 class="text-2xl font-extrabold tracking-tight text-slate-800">Asset Management</h2>
+    <p class="text-sm text-slate-500 mt-1">Manage, track, and update your individual assets</p>
+  </div>
+  <button 
+    class="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white rounded-xl font-semibold text-sm cursor-pointer shadow-md shadow-indigo-600/10 transition-all duration-200 hover:translate-y-[-1px] active:translate-y-0"
+    (click)="toggleAddForm()"
+  >
+    {{ showAddForm() ? 'Cancel' : '+ Add Asset' }}
+  </button>
+</div>
+
+<!-- Add Asset Inline Form -->
+@if (showAddForm() && !editingAssetId()) {
+  <section class="p-6 mb-8 rounded-2xl bg-white border border-slate-200/80 shadow-sm border-l-4 border-l-indigo-600 animate-fade-in">
+    <h3 class="text-base font-bold text-slate-800 mb-6">Add New Asset</h3>
+    <form [formGroup]="addForm" (ngSubmit)="saveAsset()" class="flex flex-col gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <!-- Section 1: Asset Identity -->
+        <div class="flex flex-col gap-4">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-600 pb-1.5 border-b border-indigo-50/60 mb-2">Asset Details</h4>
+          
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Name</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </span>
+              <input 
+                type="text" 
+                formControlName="name" 
+                placeholder="e.g. Apple Inc."
+                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 focus:ring-3 focus:ring-indigo-600/10 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-200 bg-white"
+              >
+            </div>
+          </div>
+          
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Symbol</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </span>
+              <input 
+                type="text" 
+                formControlName="symbol" 
+                placeholder="AAPL"
+                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 focus:ring-3 focus:ring-indigo-600/10 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-200 bg-white uppercase"
+              >
+            </div>
+          </div>
+          
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Type</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+              </span>
+              <select 
+                formControlName="type"
+                class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 focus:ring-3 focus:ring-indigo-600/10 text-sm text-slate-800 focus:outline-none transition-all duration-200 bg-white cursor-pointer appearance-none"
+              >
+                @for (t of assetTypes; track t) {
+                  <option [value]="t">{{ t }}</option>
+                }
+              </select>
+              <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none">
+                <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Financial Details -->
+        <div class="flex flex-col gap-4">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-600 pb-1.5 border-b border-emerald-50/60 mb-2">Financial Details</h4>
+          
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Quantity</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+              </span>
+              <input 
+                type="number" 
+                step="0.01" 
+                formControlName="quantity"
+                placeholder="0.00"
+                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 focus:ring-3 focus:ring-indigo-600/10 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-200 bg-white"
+              >
+            </div>
+          </div>
+          
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Purchase Price</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </span>
+              <input 
+                type="number" 
+                step="0.01" 
+                formControlName="purchasePrice"
+                placeholder="0.00"
+                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 focus:ring-3 focus:ring-indigo-600/10 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-200 bg-white"
+              >
+            </div>
+          </div>
+          
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Current Price</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+              </span>
+              <input 
+                type="number" 
+                step="0.01" 
+                formControlName="currentPrice"
+                placeholder="0.00"
+                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 focus:ring-3 focus:ring-indigo-600/10 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-200 bg-white"
+              >
+            </div>
+          </div>
+        </div>
+
+      </div>
+      
+      <div class="flex justify-end gap-3 mt-4 pt-4 border-t border-slate-100">
+        <button type="button" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 rounded-xl font-semibold text-sm cursor-pointer transition-all duration-200" (click)="toggleAddForm()">Cancel</button>
+        <button 
+          type="submit" 
+          class="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white rounded-xl font-semibold text-sm cursor-pointer shadow-md shadow-indigo-600/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
+          [disabled]="addForm.invalid || isSaving()"
+        >
+          {{ isSaving() ? 'Saving...' : 'Add Asset' }}
+        </button>
+      </div>
+    </form>
+  </section>
+}
+
+<!-- Edit Asset Modal -->
+@if (editingAssetId()) {
+  <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+    <div class="w-full max-w-2xl p-6 bg-white border border-slate-200/80 shadow-xl rounded-2xl">
+      <h3 class="text-lg font-bold text-slate-800 mb-6">Edit Asset</h3>
+      <form [formGroup]="addForm" (ngSubmit)="saveAsset()" class="flex flex-col gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          <!-- Section 1: Asset Identity -->
+          <div class="flex flex-col gap-4">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-600 pb-1.5 border-b border-indigo-50/60 mb-2">Asset Details</h4>
+            
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Name</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                  <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                </span>
+                <input 
+                  type="text" 
+                  formControlName="name" 
+                  placeholder="e.g. Apple Inc."
+                  class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 focus:ring-3 focus:ring-indigo-600/10 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-200 bg-white"
+                >
+              </div>
+            </div>
+            
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Symbol</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                  <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </span>
+                <input 
+                  type="text" 
+                  formControlName="symbol" 
+                  placeholder="AAPL"
+                  class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 focus:ring-3 focus:ring-indigo-600/10 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-200 bg-white uppercase"
+                >
+              </div>
+            </div>
+            
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Type</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                  <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                  </svg>
+                </span>
+                <select 
+                  formControlName="type"
+                  class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 focus:ring-3 focus:ring-indigo-600/10 text-sm text-slate-800 focus:outline-none transition-all duration-200 bg-white cursor-pointer appearance-none"
+                >
+                  @for (t of assetTypes; track t) {
+                    <option [value]="t">{{ t }}</option>
+                  }
+                </select>
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none">
+                  <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Financial Details -->
+          <div class="flex flex-col gap-4">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-600 pb-1.5 border-b border-emerald-50/60 mb-2">Financial Details</h4>
+            
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Quantity</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                  <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                </span>
+                <input 
+                  type="number" 
+                  step="0.01" 
+                  formControlName="quantity"
+                  placeholder="0.00"
+                  class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 focus:ring-3 focus:ring-indigo-600/10 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-200 bg-white"
+                >
+              </div>
+            </div>
+            
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Purchase Price</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                  <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </span>
+                <input 
+                  type="number" 
+                  step="0.01" 
+                  formControlName="purchasePrice"
+                  placeholder="0.00"
+                  class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 focus:ring-3 focus:ring-indigo-600/10 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-200 bg-white"
+                >
+              </div>
+            </div>
+            
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Current Price</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                  <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                </span>
+                <input 
+                  type="number" 
+                  step="0.01" 
+                  formControlName="currentPrice"
+                  placeholder="0.00"
+                  class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 focus:ring-3 focus:ring-indigo-600/10 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-200 bg-white"
+                >
+              </div>
+            </div>
+          </div>
+
+        </div>
+        
+        <div class="flex justify-between items-center mt-4 pt-4 border-t border-slate-100">
+          <button 
+            type="button" 
+            class="px-5 py-2.5 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 rounded-xl font-bold text-sm cursor-pointer transition-all duration-200 flex items-center gap-1.5"
+            (click)="sellAndRemoveAsset()"
+            [disabled]="addForm.invalid || isSaving()"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            Sell & Remove
+          </button>
+
+          <div class="flex gap-3">
+            <button type="button" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 rounded-xl font-semibold text-sm cursor-pointer transition-all duration-200" (click)="cancelEdit()">Cancel</button>
+            <button 
+              type="submit" 
+              class="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white rounded-xl font-semibold text-sm cursor-pointer shadow-md shadow-indigo-600/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
+              [disabled]="addForm.invalid || isSaving()"
+            >
+              {{ isSaving() ? 'Saving...' : 'Confirm & Save' }}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Asset List -->
+<section class="animate-fade-in">
+  <div class="flex flex-col sm:flex-row gap-4 p-4 mb-8 rounded-2xl bg-white border border-slate-200/80 shadow-sm items-center">
+    <div class="flex-1 w-full">
+      <input 
+        type="text" 
+        placeholder="Search by name or symbol..." 
+        [formControl]="searchControl" 
+        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 focus:ring-3 focus:ring-indigo-600/10 text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-200 bg-white"
+      />
+    </div>
+    <div class="w-full sm:w-[200px]">
+      <select 
+        [formControl]="typeControl"
+        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 focus:ring-3 focus:ring-indigo-600/10 text-sm text-slate-800 focus:outline-none transition-all duration-200 bg-white cursor-pointer"
+      >
+        <option value="ALL">All Assets</option>
+        <option value="STOCK">Stocks</option>
+        <option value="BOND">Bonds</option>
+        <option value="CRYPTO">Crypto</option>
+        <option value="MUTUAL_FUND">Mutual Funds</option>
+        <option value="CASH">Cash</option>
+      </select>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (dummy of [1,2,3,4,5,6]; track dummy) {
+        <div class="h-[210px] rounded-2xl bg-slate-200/70 border border-slate-200/30 animate-pulse"></div>
+      }
+    </div>
+  } @else if (!loadedAssets().length) {
+    <div class="p-12 text-center text-slate-400 rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+      <p class="font-medium text-sm">No assets found. Click "+ Add Asset" to get started!</p>
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (asset of loadedAssets(); track asset._id) {
+        <div class="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex flex-col gap-4 transition-all duration-300 hover:translate-y-[-4px] hover:shadow-md hover:shadow-slate-200/40">
+          <div class="flex justify-between items-start">
+            <div class="flex items-center gap-2">
+              <h4 class="text-base font-extrabold text-slate-800">{{ asset.symbol }}</h4>
+              
+              <!-- Asset Badges mapping -->
+              @switch (asset.type) {
+                @case ('STOCK') {
+                  <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase rounded bg-purple-50 text-purple-700 border border-purple-100">Stock</span>
+                }
+                @case ('BOND') {
+                  <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase rounded bg-emerald-50 text-emerald-700 border border-emerald-100">Bond</span>
+                }
+                @case ('CRYPTO') {
+                  <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase rounded bg-amber-50 text-amber-700 border border-amber-100">Crypto</span>
+                }
+                @case ('MUTUAL_FUND') {
+                  <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase rounded bg-blue-50 text-blue-700 border border-blue-100">Mutual Fund</span>
+                }
+                @default {
+                  <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase rounded bg-slate-50 text-slate-700 border border-slate-100">Cash</span>
+                }
+              }
+            </div>
+            <div class="flex gap-1">
+              <button 
+                class="text-slate-400 hover:text-indigo-600 text-sm cursor-pointer p-1.5 rounded-lg hover:bg-slate-50 transition-all duration-200" 
+                (click)="editAsset(asset)" 
+                title="Edit Asset"
+              >
+                <!-- Edit SVG Icon -->
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+              </button>
+              <button 
+                class="text-slate-400 hover:text-rose-600 text-sm cursor-pointer p-1.5 rounded-lg hover:bg-slate-50 transition-all duration-200" 
+                (click)="editAsset(asset)" 
+                title="Sell / Remove Asset"
+              >
+                <!-- Delete SVG Icon -->
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <div class="text-xs font-semibold text-slate-400 mt-[-8px] truncate">{{ asset.name }}</div>
+          
+          <div class="p-4 rounded-xl bg-slate-50/50 border border-slate-100 flex flex-col gap-2.5">
+            <div class="flex justify-between text-xs">
+              <span class="text-slate-400 font-medium">Quantity</span>
+              <span class="text-slate-700 font-bold">{{ asset.quantity | number:'1.2-4' }}</span>
+            </div>
+            <div class="flex justify-between text-xs">
+              <span class="text-slate-400 font-medium">Avg Cost</span>
+              <span class="text-slate-700 font-bold">{{ asset.purchasePrice | currency:'USD' }}</span>
+            </div>
+            <div class="flex justify-between text-xs">
+              <span class="text-slate-400 font-medium">Current</span>
+              <span class="text-slate-700 font-bold">{{ asset.currentPrice | currency:'USD' }}</span>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center mt-1">
+            <div class="text-xl font-extrabold text-slate-800">{{ asset.totalValue | currency:'USD' }}</div>
+            <div 
+              class="px-2.5 py-1 rounded-full text-xs font-bold border" 
+              [ngClass]="asset.performancePercentage >= 0 
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-100' 
+                : 'bg-rose-50 text-rose-700 border-rose-100'"
+            >
+              {{ asset.performancePercentage >= 0 ? '+' : '' }}{{ asset.performancePercentage | number:'1.2-2' }}%
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (isLoadingMore()) {
+      <div class="flex flex-col items-center justify-center p-6 gap-2 text-slate-400">
+        <svg class="animate-spin h-6 w-6 text-indigo-500" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <p class="text-xs font-medium">Loading more assets...</p>
+      </div>
+    }
+  }
+  <!-- Infinite Scroll Observer Target (always in DOM for stable ViewChild resolution) -->
+  <div #observerTarget class="h-5 w-full"></div>
+</section>

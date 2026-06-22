@@ -1,0 +1,81 @@
+/* ── Fade in ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in { animation: fadeIn 0.4s ease-out both; }
+
+/* ── Slide in from left (completion banner) ── */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.animate-slide-in { animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* ── Terminal line fade-in ── */
+@keyframes termLine {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.animate-term-line { animation: termLine 0.12s ease-out both; }
+
+/* ── Blinking cursor ── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+.animate-blink { animation: blink 1s step-start infinite; }
+
+/* ── Check pop when test passes ── */
+@keyframes checkPop {
+  0%   { transform: scale(0) rotate(-45deg); }
+  60%  { transform: scale(1.3) rotate(5deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+.check-pop { animation: checkPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+/* ── Active test row: pulsing glow ── */
+@keyframes rowGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+  50%       { box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12); }
+}
+.test-row-active {
+  background-color: rgb(238 242 255 / 0.7) !important;
+  animation: rowGlow 1.2s ease-in-out infinite;
+}
+
+/* ── Passed row fade to success ── */
+.test-row-passed {
+  transition: background-color 0.3s ease;
+}
+
+/* ── Spotlight scan line on the active test bar ── */
+@keyframes scan {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.spotlight-scan {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(99, 102, 241, 0.06) 40%,
+    rgba(99, 102, 241, 0.12) 50%,
+    rgba(99, 102, 241, 0.06) 60%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: scan 2s linear infinite;
+}
+
+/* ── Progress bar shimmer ── */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.progress-shimmer {
+  background-size: 200% 100%;
+  animation: shimmer 1.8s linear infinite;
+}
+
+/* ── Smooth terminal scroll ── */
+.scroll-smooth { scroll-behavior: smooth; }
