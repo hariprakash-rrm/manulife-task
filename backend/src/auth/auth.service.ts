@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, ConflictException, UnauthorizedException, InternalServerErrorException, HttpException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UsersService } from '../users/users.service';
@@ -13,39 +13,59 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto) {
-    const existing = await this.usersService.findByEmail(dto.email);
-    if (existing) throw new ConflictException('Email already registered');
+    try {
+      const existing = await this.usersService.findByEmail(dto.email);
+      if (existing) throw new ConflictException('Email already registered');
 
-    const hashedPassword = await bcrypt.hash(dto.password, 10);
-    const user = await this.usersService.create(dto.email, hashedPassword);
-    const id = (user._id as { toString(): string }).toString();
+      const hashedPassword = await bcrypt.hash(dto.password, 10);
+      const user = await this.usersService.create(dto.email, hashedPassword);
+      const id = (user._id as { toString(): string }).toString();
 
-    const tokens = await this.generateTokens(id, user.email);
-    await this.storeRefreshHash(id, tokens.refreshToken);
-    return { ...tokens, user: { id, email: user.email } };
+      const tokens = await this.generateTokens(id, user.email);
+      await this.storeRefreshHash(id, tokens.refreshToken);
+      return { ...tokens, user: { id, email: user.email } };
+    } catch (error: any) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Registration failed: ${error.message}`);
+    }
   }
 
   async login(dto: LoginDto) {
-    const user = await this.usersService.findByEmail(dto.email);
-    if (!user) throw new UnauthorizedException('Invalid credentials');
+    try {
+      const user = await this.usersService.findByEmail(dto.email);
+      if (!user) throw new UnauthorizedException('Invalid credentials');
 
-    const passwordMatch = await bcrypt.compare(dto.password, user.password);
-    if (!passwordMatch) throw new UnauthorizedException('Invalid credentials');
+      const passwordMatch = await bcrypt.compare(dto.password, user.password);
+      if (!passwordMatch) throw new UnauthorizedException('Invalid credentials');
 
-    const id = (user._id as { toString(): string }).toString();
-    const tokens = await this.generateTokens(id, user.email);
-    await this.storeRefreshHash(id, tokens.refreshToken);
-    return { ...tokens, user: { id, email: user.email } };
+      const id = (user._id as { toString(): string }).toString();
+      const tokens = await this.generateTokens(id, user.email);
+      await this.storeRefreshHash(id, tokens.refreshToken);
+      return { ...tokens, user: { id, email: user.email } };
+    } catch (error: any) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Login failed: ${error.message}`);
+    }
   }
 
   async refresh(userId: string, email: string) {
-    const tokens = await this.generateTokens(userId, email);
-    await this.storeRefreshHash(userId, tokens.refreshToken);
-    return tokens;
+    try {
+      const tokens = await this.generateTokens(userId, email);
+      await this.storeRefreshHash(userId, tokens.refreshToken);
+      return tokens;
+    } catch (error: any) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Refresh failed: ${error.message}`);
+    }
   }
 
   async logout(userId: string): Promise<void> {
-    await this.usersService.updateRefreshTokenHash(userId, null);
+    try {
+      await this.usersService.updateRefreshTokenHash(userId, null);
+    } catch (error: any) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Logout failed: ${error.message}`);
+    }
   }
 
   private async generateTokens(userId: string, email: string) {

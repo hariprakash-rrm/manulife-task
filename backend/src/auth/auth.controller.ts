@@ -6,6 +6,8 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  InternalServerErrorException,
+  HttpException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
@@ -23,33 +25,57 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  register(@Body(new ZodValidationPipe(RegisterSchema)) dto: RegisterDto) {
-    return this.authService.register(dto);
+  async register(@Body(new ZodValidationPipe(RegisterSchema)) dto: RegisterDto) {
+    try {
+      return await this.authService.register(dto);
+    } catch (error: any) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(error.message || 'Internal server error');
+    }
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  login(@Body(new ZodValidationPipe(LoginSchema)) dto: LoginDto) {
-    return this.authService.login(dto);
+  async login(@Body(new ZodValidationPipe(LoginSchema)) dto: LoginDto) {
+    try {
+      return await this.authService.login(dto);
+    } catch (error: any) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(error.message || 'Internal server error');
+    }
   }
 
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtRefreshGuard)
-  refresh(@CurrentUser() user: AuthUser) {
-    return this.authService.refresh(user.id, user.email);
+  async refresh(@CurrentUser() user: AuthUser) {
+    try {
+      return await this.authService.refresh(user.id, user.email);
+    } catch (error: any) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(error.message || 'Internal server error');
+    }
   }
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
-  logout(@CurrentUser() user: AuthUser) {
-    return this.authService.logout(user.id);
+  async logout(@CurrentUser() user: AuthUser) {
+    try {
+      return await this.authService.logout(user.id);
+    } catch (error: any) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(error.message || 'Internal server error');
+    }
   }
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
   me(@CurrentUser() user: AuthUser) {
-    return user;
+    try {
+      return user;
+    } catch (error: any) {
+      throw new InternalServerErrorException(error.message || 'Internal server error');
+    }
   }
 }

@@ -1,6 +1,7 @@
 import {
   Controller, Get, Post, Put, Delete,
   Body, Param, UseGuards, Request, Query,
+  InternalServerErrorException, HttpException
 } from '@nestjs/common';
 import { PortfoliosService } from './portfolios.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -14,59 +15,89 @@ export class PortfoliosController {
   constructor(private readonly portfoliosService: PortfoliosService) {}
 
   @Get()
-  getPortfolio(
+  async getPortfolio(
     @Request() req: any,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('type') type?: string,
     @Query('search') search?: string,
   ) {
-    return this.portfoliosService.getPortfolio(
-      req.user.id,
-      parseInt(page ?? '1', 10),
-      parseInt(limit ?? '10', 10),
-      type,
-      search,
-    );
+    try {
+      return await this.portfoliosService.getPortfolio(
+        req.user.id,
+        parseInt(page ?? '1', 10),
+        parseInt(limit ?? '10', 10),
+        type,
+        search,
+      );
+    } catch (error: any) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(error.message || 'Internal server error');
+    }
   }
 
   @Get('transactions')
-  getTransactions(
+  async getTransactions(
     @Request() req: any,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
-    return this.portfoliosService.getTransactions(
-      req.user.id,
-      parseInt(page ?? '1', 10),
-      parseInt(limit ?? '20', 10),
-    );
+    try {
+      return await this.portfoliosService.getTransactions(
+        req.user.id,
+        parseInt(page ?? '1', 10),
+        parseInt(limit ?? '20', 10),
+      );
+    } catch (error: any) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(error.message || 'Internal server error');
+    }
   }
 
   @Get('chart')
-  getChartData(@Request() req: any, @Query('limit') limit?: string) {
-    return this.portfoliosService.getChartData(req.user.id, parseInt(limit ?? '30', 10));
+  async getChartData(@Request() req: any, @Query('limit') limit?: string) {
+    try {
+      return await this.portfoliosService.getChartData(req.user.id, parseInt(limit ?? '30', 10));
+    } catch (error: any) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(error.message || 'Internal server error');
+    }
   }
 
   @Post('assets')
-  addAsset(
+  async addAsset(
     @Request() req: any,
     @Body(new ZodValidationPipe(AddAssetSchema)) dto: AddAssetDto,
   ) {
-    return this.portfoliosService.addAsset(req.user.id, dto);
+    try {
+      return await this.portfoliosService.addAsset(req.user.id, dto);
+    } catch (error: any) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(error.message || 'Internal server error');
+    }
   }
 
   @Put('assets/:id')
-  updateAsset(
+  async updateAsset(
     @Request() req: any,
     @Param('id') assetId: string,
     @Body(new ZodValidationPipe(UpdateAssetSchema)) dto: UpdateAssetDto,
   ) {
-    return this.portfoliosService.updateAsset(req.user.id, assetId, dto);
+    try {
+      return await this.portfoliosService.updateAsset(req.user.id, assetId, dto);
+    } catch (error: any) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(error.message || 'Internal server error');
+    }
   }
 
   @Delete('assets/:id')
-  removeAsset(@Request() req: any, @Param('id') assetId: string) {
-    return this.portfoliosService.removeAsset(req.user.id, assetId);
+  async removeAsset(@Request() req: any, @Param('id') assetId: string) {
+    try {
+      return await this.portfoliosService.removeAsset(req.user.id, assetId);
+    } catch (error: any) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(error.message || 'Internal server error');
+    }
   }
 }
