@@ -4,12 +4,11 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { loginSchema } from '../../schemas/auth.schemas';
 import { ToastService } from '../../../core/services/toast.service';
-import { TestsComponent } from '../../../dashboard/pages/tests/tests.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, TestsComponent],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
