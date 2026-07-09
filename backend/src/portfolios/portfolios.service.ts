@@ -270,7 +270,9 @@ export class PortfoliosService {
         userId: new Types.ObjectId(userId),
         'assets._id': new Types.ObjectId(assetId),
       });
-      const asset = existing?.assets.find((a) => (a._id as any).toString() === assetId);
+      if (!existing) throw new NotFoundException('Asset not found');
+      
+      const asset = existing.assets.find((a) => (a._id as any).toString() === assetId)!;
 
       const portfolio = await this.portfolioModel.findOneAndUpdate(
         { userId: new Types.ObjectId(userId) },

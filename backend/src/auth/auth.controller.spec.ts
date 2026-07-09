@@ -41,6 +41,12 @@ describe('AuthController', () => {
       expect(mockAuthService.register).toHaveBeenCalledWith(dto);
       expect(result).toEqual(expectedResult);
     });
+
+    it('should throw ConflictException if authService.register throws', async () => {
+      const dto: RegisterDto = { email: 'test@example.com', password: 'password123' };
+      mockAuthService.register.mockRejectedValue(new Error('ConflictException'));
+      await expect(controller.register(dto)).rejects.toThrow('ConflictException');
+    });
   });
 
   describe('login', () => {
@@ -55,6 +61,12 @@ describe('AuthController', () => {
       expect(mockAuthService.login).toHaveBeenCalledWith(dto);
       expect(result).toEqual(expectedResult);
     });
+
+    it('should throw UnauthorizedException if authService.login throws', async () => {
+      const dto: LoginDto = { email: 'test@example.com', password: 'password123' };
+      mockAuthService.login.mockRejectedValue(new Error('UnauthorizedException'));
+      await expect(controller.login(dto)).rejects.toThrow('UnauthorizedException');
+    });
   });
 
   describe('refresh', () => {
@@ -68,6 +80,12 @@ describe('AuthController', () => {
 
       expect(mockAuthService.refresh).toHaveBeenCalledWith(user.id, user.email);
       expect(result).toEqual(expectedResult);
+    });
+
+    it('should throw error if authService.refresh throws', async () => {
+      const user = { id: '1', email: 'test@example.com' };
+      mockAuthService.refresh.mockRejectedValue(new Error('UnauthorizedException'));
+      await expect(controller.refresh(user as any)).rejects.toThrow('UnauthorizedException');
     });
   });
 

@@ -12,6 +12,7 @@ jest.mock('bcryptjs', () => ({
 
 const mockUsersService = {
   findByEmail: jest.fn(),
+  findById: jest.fn(),
   create: jest.fn(),
   updateRefreshTokenHash: jest.fn(),
 };
@@ -109,6 +110,26 @@ describe('AuthService', () => {
     it('should clear the refresh token hash', async () => {
       await service.logout('1');
       expect(mockUsersService.updateRefreshTokenHash).toHaveBeenCalledWith('1', null);
+    });
+  });
+
+  describe('refresh', () => {
+    it('should return new tokens on successful refresh', async () => {
+      mockJwtService.signAsync
+        .mockResolvedValueOnce('new-access-token')
+        .mockResolvedValueOnce('new-refresh-token');
+      (bcrypt.hash as jest.Mock).mockResolvedValue('new-hashed-token');
+
+      const result = await service.refresh('1', 'test@example.com');
+
+      expect(result).toHaveProperty('accessToken', 'new-access-token');
+      expect(result).toHaveProperty('refreshToken', 'new-refresh-token');
+      expect(mockUsersService.updateRefreshTokenHash).toHaveBeenCalledWith('1', 'new-hashed-token');
+    });
+
+    it('should throw InternalServerErrorException on error', async () => {
+      mockJwtService.signAsync.mockRejectedValue(new Error('Jwt error'));
+      await expect(service.refresh('1', 'test@example.com')).rejects.toThrow('Refresh failed: Jwt error');
     });
   });
 });

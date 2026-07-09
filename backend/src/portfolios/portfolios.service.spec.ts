@@ -141,6 +141,11 @@ describe('PortfoliosService', () => {
       expect(page2.assets).toHaveLength(5);
       expect(page2.hasMore).toBe(false);
     });
+
+    it('throws error if database query fails', async () => {
+      mockPortfolioModel.findOne.mockRejectedValue(new Error('DB error'));
+      await expect(service.getPortfolio(USER_ID)).rejects.toThrow('DB error');
+    });
   });
 
   // ── addAsset ───────────────────────────────────────────────
@@ -157,6 +162,15 @@ describe('PortfoliosService', () => {
       expect(mockTransactionModel.create).toHaveBeenCalledWith(
         expect.objectContaining({ transactionType: 'BUY', symbol: 'AAPL' }),
       );
+    });
+
+    it('throws BadRequestException on ValidationError', async () => {
+      const dto = { name: 'Apple', symbol: 'AAPL', type: 'STOCK' as const, quantity: 10, purchasePrice: 150, currentPrice: 175 };
+      const validationError = new Error('Validation failed');
+      validationError.name = 'ValidationError';
+      mockPortfolioModel.findOneAndUpdate.mockRejectedValue(validationError);
+
+      await expect(service.addAsset(USER_ID, dto)).rejects.toThrow('Validation failed');
     });
   });
 
@@ -205,6 +219,22 @@ describe('PortfoliosService', () => {
         expect.objectContaining({ transactionType: 'UPDATE' }),
       );
     });
+
+    it('throws BadRequestException on ValidationError', async () => {
+      mockPortfolioModel.findOne.mockResolvedValue(mockPortfolio);
+      const validationError = new Error('Validation failed');
+      validationError.name = 'ValidationError';
+      mockPortfolioModel.findOneAndUpdate.mockRejectedValue(validationError);
+
+      await expect(service.updateAsset(USER_ID, ASSET_ID, { quantity: 15 })).rejects.toThrow('Validation failed');
+    });
+
+    it('throws InternalServerErrorException on database error', async () => {
+      mockPortfolioModel.findOne.mockResolvedValue(mockPortfolio);
+      mockPortfolioModel.findOneAndUpdate.mockRejectedValue(new Error('Database error'));
+
+      await expect(service.updateAsset(USER_ID, ASSET_ID, { quantity: 15 })).rejects.toThrow('Failed to update asset: Database error');
+    });
   });
 
   // ── removeAsset ────────────────────────────────────────────
@@ -220,6 +250,11 @@ describe('PortfoliosService', () => {
       expect(mockTransactionModel.create).toHaveBeenCalledWith(
         expect.objectContaining({ transactionType: 'SELL', symbol: 'AAPL' }),
       );
+    });
+
+    it('throws NotFoundException when asset does not exist', async () => {
+      mockPortfolioModel.findOne.mockResolvedValue(null);
+      await expect(service.removeAsset(USER_ID, ASSET_ID)).rejects.toThrow(NotFoundException);
     });
   });
 
