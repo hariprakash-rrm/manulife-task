@@ -1,0 +1,40 @@
+<div class="space-y-6">
+  <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+    <h1 class="text-2xl font-bold text-slate-900 mb-2">API Documentation</h1>
+    <p class="text-slate-500">List of all backend API endpoints with their expected requests and responses.</p>
+  </div>
+
+  <div class="space-y-8" *ngFor="let module of apis">
+    <div>
+      <h2 class="text-xl font-bold text-indigo-700 mb-4 border-b border-indigo-100 pb-2">{{ module.module }} Endpoints</h2>
+      
+      <div class="space-y-4">
+        <div *ngFor="let endpoint of module.endpoints" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          
+          <div class="p-4 border-b border-slate-100 bg-slate-50 flex items-center gap-4">
+            <span [ngClass]="getMethodClass(endpoint.method)" class="px-3 py-1 rounded-md text-xs font-bold border w-16 text-center">
+              {{ endpoint.method }}
+            </span>
+            <code class="text-sm font-semibold text-slate-800 font-mono">{{ endpoint.path }}</code>
+            <span class="text-sm text-slate-500 ml-auto hidden sm:block">{{ endpoint.description }}</span>
+          </div>
+
+          <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50/30">
+            <!-- Request -->
+            <div>
+              <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Request</h4>
+              <pre class="bg-slate-900 text-slate-50 p-4 rounded-lg text-xs overflow-x-auto h-full max-h-60"><code>{{ endpoint.request | json }}</code></pre>
+            </div>
+            
+            <!-- Response -->
+            <div>
+              <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Response</h4>
+              <pre class="bg-slate-900 text-green-400 p-4 rounded-lg text-xs overflow-x-auto h-full max-h-60"><code>{{ endpoint.response | json }}</code></pre>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

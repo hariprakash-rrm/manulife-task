@@ -38,6 +38,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'transactions',
+        loadComponent: () =>
+          import('./dashboard/pages/transactions/transactions.component').then(
+            (m) => m.TransactionsComponent,
+          ),
+      },
+      {
         path: 'profile',
         loadComponent: () =>
           import('./dashboard/pages/profile/profile.component').then(
@@ -50,6 +57,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./dashboard/pages/flow-diagram/flow-diagram.component').then(
             (m) => m.FlowDiagramComponent,
+          ),
+      },
+      {
+        path: 'api-list',
+        loadComponent: () =>
+          import('./dashboard/pages/api-list/api-list.component').then(
+            (m) => m.ApiListComponent,
           ),
       },
     ],

@@ -99,6 +99,21 @@
           <span class="tracking-wide text-[13.5px]">Flow Diagram</span>
         }
       </a>
+      <a
+        routerLink="/dashboard/api-list"
+        routerLinkActive="!text-white !bg-gradient-to-r from-indigo-600 to-indigo-500 shadow-md shadow-indigo-600/15"
+        class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl font-semibold text-sm transition-all duration-200 cursor-pointer"
+        [class.justify-center]="isSidebarCollapsed()"
+        [title]="isSidebarCollapsed() ? 'API List' : ''"
+      >
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+        </svg>
+        @if (!isSidebarCollapsed()) {
+          <span class="tracking-wide text-[13.5px]">API List</span>
+        }
+      </a>
+      
     </nav>
 
     <div class="mt-auto">
